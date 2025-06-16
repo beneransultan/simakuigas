@@ -62,6 +62,12 @@
             border-color: #d97706;
             transform: scale(1.1);
         }
+        /* Fix for text overflow on mobile */
+        .explanation-content, #question-text, .review-text {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-white">
@@ -171,13 +177,14 @@
                     const a = Math.floor(Math.random() * 5) + 1;
                     const b = Math.floor(Math.random() * 5) + 1;
                     const c = Math.floor(Math.random() * 5) + 2;
-                    const ans = a * c + b;
+                    const ans = a * (c*c) + b;
+                    const g_c = c*c;
                     return {
                         level: "Sedang",
-                        question: `Jika $f(x) = ${a}x+${b}$ dan $g(x) = x^2 - ${c-2}$, maka nilai dari $(f \\circ g)(${c})$ adalah...`,
+                        question: `Jika $f(x) = ${a}x+${b}$ dan $g(x) = x^2$, maka nilai dari $(f \\circ g)(${c})$ adalah...`,
                         options: [ans-2, ans-1, ans, ans+1, ans+2].sort(() => Math.random() - 0.5),
                         answer: [ans-2, ans-1, ans, ans+1, ans+2].sort(() => Math.random() - 0.5).indexOf(ans),
-                        explanation: `$(f \\circ g)(${c}) = f(g(${c}))$. Pertama, hitung $g(${c}) = ${c}^2 - ${c-2} = ${c*c - (c-2)}$. Kemudian hitung $f(${c*c - (c-2)}) = ${a}(${c*c - (c-2)}) + ${b} = ${ans}$.`
+                        explanation: `$(f \\circ g)(${c}) = f(g(${c}))$. Pertama, hitung $g(${c}) = ${c}^2 = ${g_c}$. Kemudian hitung $f(${g_c}) = ${a}(${g_c}) + ${b} = ${ans}$.`
                     };
                 })
             ],
@@ -294,16 +301,16 @@
             quizScreen.classList.remove('hidden');
             quizScreen.classList.add('fade-in');
 
-            // Hide or show elements based on quiz mode
             const isExercise = currentSubtest === 'exercise';
             timerDisplayEl.style.display = isExercise ? 'block' : 'none';
             prevButton.style.display = isExercise ? 'block' : 'none';
             questionNavContainer.style.display = isExercise ? 'flex' : 'none';
+
             if(isExercise) {
-                startTimer(45 * 60); // 45 minutes
+                startTimer(45 * 60);
                 generateQuestionNav();
             } else {
-                nextButton.classList.add('hidden'); // Hide next button initially in normal mode
+                nextButton.classList.add('hidden');
             }
 
             displayQuestion();
@@ -313,7 +320,7 @@
             quizScreen.scrollTop = 0;
             feedbackSectionEl.classList.add('hidden');
             questionCard.classList.remove('slide-up');
-            void questionCard.offsetWidth; // Trigger reflow
+            void questionCard.offsetWidth;
             questionCard.classList.add('slide-up');
             
             progressBarEl.style.width = `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%`;
@@ -383,7 +390,6 @@
                 }
                 nextButton.classList.remove('hidden');
             } else {
-                // For exercise mode, just highlight selection
                 for (let btn of optionButtons) {
                     btn.classList.remove('selected-answer');
                 }
@@ -403,7 +409,7 @@
                 }
             } else {
                 prevButton.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
-                 nextButton.classList.remove('hidden');
+                nextButton.classList.remove('hidden');
                 if (currentQuestionIndex === activeQuestions.length - 1) {
                     nextButton.textContent = 'Selesaikan';
                     nextButton.onclick = endQuiz;
@@ -483,7 +489,7 @@
 
                 reviewCard.innerHTML = `
                     <p class="font-semibold text-lg mb-2">Soal ${index + 1}:</p>
-                    <div class="text-slate-300 mb-3">${q.question}</div>
+                    <div class="text-slate-300 mb-3 review-text">${q.question}</div>
                     <p class="text-sm">Jawabanmu: <span class="font-semibold ${isCorrect ? 'text-green-400' : 'text-red-400'}">${answerText}</span></p>
                     ${!isCorrect ? `<p class="text-sm">Jawaban Benar: <span class="font-semibold text-green-400">${q.options[q.answer]}</span></p>` : ''}
                     <button onclick="toggleExplanation(this)" class="text-sky-400 text-sm mt-3">Tampilkan Pembahasan</button>
@@ -586,5 +592,3 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
