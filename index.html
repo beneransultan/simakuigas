@@ -65,8 +65,8 @@
         /* Fix for text overflow on mobile */
         .explanation-content, #question-text, .review-text {
             overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
+            word-wrap: break-word; /* Fallback */
+            overflow-x: auto; /* Add horizontal scroll for unbreakable content */
         }
     </style>
 </head>
@@ -585,10 +585,11 @@
             displayMath: [['$$', '$$'], ['\\[', '\\]']]
           },
           svg: {
-            fontCache: 'global'
+            fontCache: 'global',
+            adaptive: true
           }
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
-</html>
+</ht
